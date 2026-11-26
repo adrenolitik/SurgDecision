@@ -1,0 +1,7 @@
+.freebuff/
+.shots/
+node_modules/
+server.log
+*.log
+.DS_Store
+Thumbs.db

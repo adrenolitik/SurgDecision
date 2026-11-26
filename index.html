@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SurgDecision — решения в экстренной хирургии</title>
+<meta name="description" content="Аудируемая клиническая поддержка решений при десяти неотложных состояниях в экстренной хирургии." data-i18n-attr="content:meta.description">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">SD</span>
+    <div class="brand-text">
+      <h1>SurgDecision</h1>
+      <p data-i18n="brand.subtitle">Экстренная хирургия · аудируемые решения</p>
+    </div>
+  </div>
+  <nav class="topnav">
+    <div class="lang-switch" role="group" data-i18n-attr="aria-label:lang.label">
+      <button type="button" data-lang="ru" aria-pressed="true">RU</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <button id="btn-method" class="ghost" type="button" data-i18n="nav.method">Методика</button>
+    <button id="btn-print" class="ghost" type="button" data-i18n="nav.print">Печать</button>
+  </nav>
+</header>
+
+<main>
+  <section id="picker" class="picker">
+    <div class="intro">
+      <p class="eyebrow" data-i18n="picker.eyebrow">Клиническая поддержка решений</p>
+      <h2 data-i18n-html="picker.title">Десять неотложных состояний,<br>один аудируемый путь до операции</h2>
+      <p class="lead" data-i18n="picker.lead">
+        Каждый шаг обследования — типизированное решение: вопрос с вариантами, вероятность
+        для каждого варианта, правило выбора и запись в журнал. Дифференциальный диагноз
+        пересчитывается после каждого этапа, а план лечения строится по степени тяжести.
+      </p>
+    </div>
+    <div id="disease-grid" class="grid"></div>
+    <p class="disclaimer-line" data-i18n="picker.disclaimer">
+      Учебно-демонстрационный инструмент поддержки врачебного решения. Не является медицинским изделием,
+      не заменяет осмотр хирурга и локальные протоколы. Дозы приведены для взрослых с нормальной функцией почек.
+    </p>
+  </section>
+
+  <section id="case" class="case" hidden>
+    <aside class="side">
+      <button id="btn-back" class="link" type="button" data-i18n="case.back">← Все состояния</button>
+      <div id="side-disease"></div>
+
+      <div class="card patient">
+        <h3 data-i18n="patient.title">Пациент</h3>
+        <div class="prow">
+          <label for="p-age" data-i18n="patient.age">Возраст</label>
+          <input id="p-age" type="number" min="14" max="100" value="55">
+        </div>
+        <div class="prow">
+          <label for="p-sex" data-i18n="patient.sex">Пол</label>
+          <select id="p-sex">
+            <option value="m" data-i18n="patient.sexM">Мужской</option>
+            <option value="f" data-i18n="patient.sexF">Женский</option>
+          </select>
+        </div>
+        <div class="prow">
+          <label for="p-egfr" data-i18n="patient.egfr">СКФ, мл/мин/1,73 м²</label>
+          <input id="p-egfr" type="number" min="5" max="150" value="90">
+        </div>
+        <label class="check"><input type="checkbox" id="p-preg"> <span data-i18n="patient.pregnant">Беременность</span></label>
+        <label class="check"><input type="checkbox" id="p-pen"> <span data-i18n="patient.pen">Аллергия на пенициллин</span></label>
+        <label class="check"><input type="checkbox" id="p-ac"> <span data-i18n="patient.ac">Антикоагулянты</span></label>
+        <label class="check"><input type="checkbox" id="p-imm"> <span data-i18n="patient.imm">Иммуносупрессия</span></label>
+        <p class="hint" data-i18n="patient.hint">Параметры влияют на выбор визуализации и антибактериальной терапии.</p>
+      </div>
+
+      <div id="progress-card" class="card"></div>
+      <button id="btn-reset" class="ghost wide" type="button" data-i18n="case.reset">Начать разбор заново</button>
+    </aside>
+
+    <div class="work">
+      <div id="ddx"></div>
+      <div id="step"></div>
+      <div id="conclusion"></div>
+      <div id="plan"></div>
+      <div id="audit"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p data-i18n="footer.text">
+    SurgDecision · демонстрационная система поддержки решений. Вероятности получены байесовским
+    пересчётом таблиц отношений правдоподобия; оценки и пороги взяты из опубликованных шкал.
+    Решение всегда остаётся за хирургом.
+  </p>
+</footer>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <h2 id="modal-title" data-i18n="modal.title">Как устроено решение</h2>
+      <button id="btn-close-modal" class="ghost" type="button" data-i18n="modal.close">Закрыть</button>
+    </div>
+    <div class="modal-body">
+      <h3 data-i18n="modal.h1">Типизированный шаг вместо текста</h3>
+      <p data-i18n="modal.p1">
+        Агент не пишет рассуждение. На каждом шаге он отвечает на вопрос с закрытым списком
+        вариантов: «Какое обследование выполнить следующим?», «Есть ли симптом Мёрфи?».
+        Ответ — вероятность для каждого варианта. Детерминированный контроллер применяет
+        фиксированное правило: выполняет самый вероятный вариант. Шаг, вероятности, правило
+        и полученные данные записываются в журнал.
+      </p>
+      <h3 data-i18n="modal.h2">Дифференциальный диагноз</h3>
+      <p data-i18n="modal.p2">
+        Априорные вероятности обновляются по теореме Байеса. Для каждого симптома задана пара
+        отношений правдоподобия: LR+ (симптом есть) и LR− (симптома нет). Отношение шансов
+        умножается на LR, затем вероятности нормируются по всем вариантам дифференциала.
+        Ответ «нет данных» не изменяет распределение.
+      </p>
+      <h3 data-i18n="modal.h3">Выбор следующего действия</h3>
+      <p data-i18n="modal.p3">
+        Для каждого доступного этапа вычисляется ожидаемая информационная ценность: сумма
+        дискриминирующей силы неотвеченных признаков, взвешенная текущей вероятностью
+        альтернатив, с поправкой на «стоимость» метода. Вариант с наибольшим весом выполняется.
+        После трёх этапов в меню появляется заключение: его вес растёт с уверенностью
+        распределения. Заключение можно сформировать досрочно.
+      </p>
+      <h3 data-i18n="modal.h4">Лечение</h3>
+      <p data-i18n="modal.p4">
+        Степень тяжести определяется по профильной шкале (Alvarado, Tokyo 2018, BISAP, Hinchey,
+        Boey, Glasgow–Blatchford, индекс странгуляции, перитонеальные признаки при ишемии).
+        План лечения выбирается по степени тяжести и модифицируется с учётом аллергии,
+        беременности, СКФ и антикоагулянтов.
+      </p>
+      <h3 data-i18n="modal.h5">Границы применимости</h3>
+      <p data-i18n="modal.p5">
+        Таблицы правдоподобия — дидактические, собранные из литературы, а не откалиброванные
+        на когорте. Инструмент не валидирован как медицинское изделие, не учитывает педиатрию,
+        беременность (кроме отдельных указаний) и локальную резистентность. Любое решение
+        проверяйте по действующему протоколу учреждения.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="data.en.js"></script>
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
