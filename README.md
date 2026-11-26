@@ -63,7 +63,7 @@ python -m http.server 5173 --bind 127.0.0.1
 
 # SurgDecision — English
 
-**Russian** · **English**
+[**Russian**](#surgdecision) · **English**
 
 A demonstration clinical decision-support tool for emergency surgery: ten acute conditions, a typed work-up path, Bayesian differential diagnosis, condition-specific severity scores and a treatment plan.
 
